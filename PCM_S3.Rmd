@@ -1,0 +1,314 @@
+---
+title: "PCM_S3"
+author: "Marcial Escudero"
+date: "2024-01-10"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+EL MODELO BROWNIANO
+
+El modelo de movimiento browniano (Brownian motion model) es un modelo estocástico de paseo aleatorio y de tiempo continuo en el que los cambios de un período de tiempo al siguiente son extracciones aleatorias de una distribución normal con una media de cero y una varianza σ2 (Felsenstein 1973). Dadas estas condiciones, la varianza esperada bajo el modelo browniano aumenta linealmente a lo largo del tiempo con una tasa instantánea que es equivalente a la varianza de la distribución normal a partir de la cual se dibujan los cambios evolutivos.
+
+El movimiento browniano es un modelo simple y muy fácil de emular usando una computadora.
+Para comenzar, simulemos una única instancia de evolución del movimiento browniano durante 100 generaciones de tiempo discreto en el que la varianza del proceso de difusión (σ2) es igual a 0,01 por iteración del proceso.
+En este caso, extraeremos nuestros cambios evolutivos a partir de una distribución normal; sin embargo, probablemente valga la pena señalar que, independientemente de la distribución, la evolución procederá según el movimiento browniano a medida que la amplitud de nuestros pasos de tiempo disminuye hacia cero, siempre y cuando se cumplan otras suposiciones razonables.
+
+```{r}
+# set values for time steps and sigma squared parameter
+t<-0:100
+sig2<-0.01
+## simulate a set of random changes
+x<-rnorm(n=length(t)-1,sd=sqrt(sig2))
+## compute their cumulative sum
+x<-c(0,cumsum(x))
+# create a plot with nice margins
+par(mar=c(5.1,4.1,2.1,2.1))
+plot(t,x,type="l",ylim=c(-2,2),bty="n",xlab="time",ylab="trait value",las=1,cex.axis=0.8)
+```
+
+Quizás hayas notado que en lugar de simular la evolución browniana aditiva paso a paso, comenzamos simulando todos los pasos, luego procedimos a calcular el estado del proceso a lo largo del tiempo calculando la suma acumulada desde el tiempo 0 hasta t para todos los valores posibles de t. Esto es posible porque una propiedad del modelo es que la distribución de cambios bajo el movimiento browniano es invariante y no depende del estado anterior en el proceso de cambio.
+
+Podemos hacer muchas simulaciones manteniendo las mismas condiciones en el proceso.
+
+```{r}
+# set number of simulationsn
+nsim<-100
+# create matrix of random normal deviates
+X<-matrix(rnorm(n=nsim*(length(t)-1),sd=sqrt(sig2)),nsim,length(t)-1)
+# calculate the cumulative sum of these deviates
+# this is now a simulation of Brownian motion
+X<-cbind(rep(0,nsim),t(apply(X,1,cumsum)))
+# plot the first one
+par(mar=c(5.1,4.1,2.1,2.1))
+plot(t,X[1,],ylim=c(-2,2),type="l",bty="n",xlab="time",ylab="trait value",las=1,cex.axis=0.8)
+# plot the rest
+invisible(apply(X[2:nsim,],1,function(x,t) lines(t,x),t=t))
+```
+
+Podemos apreciar como algunas simulaciones van hacia abajo y otras hacia arriba pero no podemos observar ninguna tendencia apreciable.
+En general el cambio acumulado aumenta con respecto al tiempo. Es decir, podemos ver mucho más variación a la deracha que la izquierda.
+
+La magnitud del parametro sigma2, la tasa instantanea de cambio en el proceso Browniano es cla ve en el proceso browniano.
+Veamos que pasa si tenemos una tasa 10 veces menor.
+
+```{r}
+# set number of simulationsn
+nsim<-100
+# create matrix of random normal deviates
+X<-matrix(rnorm(n=nsim*(length(t)-1),sd=sqrt(sig2/10)),nsim,length(t)-1)
+# calculate the cumulative sum of these deviates
+# this is now a simulation of Brownian motion
+X<-cbind(rep(0,nsim),t(apply(X,1,cumsum)))
+# plot the first one
+par(mar=c(5.1,4.1,2.1,2.1))
+plot(t,X[1,],ylim=c(-2,2),type="l",bty="n",xlab="time",ylab="trait value",las=1,cex.axis=0.8)
+# plot the rest
+invisible(apply(X[2:nsim,],1,function(x,t) lines(t,x),t=t))
+```
+
+
+la cantidad de cambio acumulado es el producto de sigma2 * t. Es decir, la cantidad de cambio acumulado aumenta cuanto mayor sea sigma2 y mayor sea el tiempo transcurrido.
+
+```{r}
+# calculate variance of columns
+v<-apply(X,2,var)
+# plot the results
+par(mar=c(5.1,4.1,2.1,2.1))
+plot(t,v,ylim=c(0,0.1),type="l",xlab="time",ylab="variance",bty="n",las=1,cex.axis=0.8)
+lines(t,t*sig2/10,lwd=3,col=rgb(0,0,0,0.1))
+legend("topleft",c("observed variance","expected variance"),lwd=c(1,3),col=c("black",rgb(0,0,0,0.1)),bty="n",cex=0.8)
+
+```
+
+Al final del proceso, la cantidad de cambio acumulado debería de ser el producto entre sigma2 (0.001) y t (100).
+
+```{r}
+# find variance at the end of the simulations
+var(X[,length(t)])
+
+```
+
+
+MODELO BROWNIANO EN LA FILOGENIA
+
+En el apartado anterior hemos hecho simulaciones del modelo browniano. Pero lo que realmente nos interesa es modelizar este proceso en una filogenia. Para ello podemos utilizar la función simBMphylo.
+
+```{r}
+## load phytools package
+library(phytools)
+## simulate a tree and Brownian evolution on that
+## tree using simBMphylo
+object<-simBMphylo(n=6,t=100,sig2=0.01,fsize=0.8,cex.axis=0.6,cex.lab=0.8,las=1)
+```
+
+De nuevo podemos apreciar como la cantidad de cambio acumulado aumenta con el tiempo.
+La diferencia aquí es que los linajes solo pueden comenzar a diferenciarse una vez han divergido. Y la cantidad de cambio acumulado entre la especies es directamente proporcional al tiempo que hace que divergieron y inversamente proporcional al tiempo que comparte coancestría desde la raiz.
+
+PROPIEDADES DEL MODELO BROWNIANO
+
+El modelo browniano es un modelo de movimiento estocástico y sin una dirección definida. En cada lapso de tiempo podría tener un movimiento en una dirección y en la siguiente en la otra dirección volviendo al sitio inicial. En promedio no hay una tendencia de movimiento hacia arriba o hacia abajo.
+En este modelo la variación se acumula en función del tiempo. Hemos podido ver en la simulaciones como esa variación se acumula con el tiempo. La tasa de variación es equivalente la tasa de cambio instantaneo en el modelo browniano que hemnos denominado sigma2.
+Finalmente, cuando simulamos este modelo en una filogenia podemos apreciar que la especies más estrechamente emparentadas tiende a parecerse más en su fenotipo que las especies menos emparentadas.
+
+
+COMO AJUSTAR EL MODELO BRWONIANO A UN SET DE DATOS
+
+Necesitamos ajustar dos parámetros. Por una lado el parámetro de varianza instantanea del modelo brwoniano, que hemos llamada sigma2. Y en segundo lugar necesitamos también estimar el valor de nuestro fenotipo bajo estudio en la raíz de la filogenia.
+
+Para estimar estos dos parámetros a partir de nuestra filogenia y los valores del un fenotipo para las especies de esa filogenia y un criterio para decidir cuales son los valores σ2 y x0 que mejor se ajustan a nuestros datos (filogenia y valores del fenotipo de las especies).
+Una estrategia es usar maxima verosimilitud o maximum likelihood, es decir, seleccionar los valores de nuestros parámetros que maximicen la probabilidad de obtener los datos que observamos (filogenia y fenotipo).
+
+Ajustar un modelo browniano es bastante fácil en R. Para hacerlo vamos a cargar en primer lugar los datos de un estudio de Gibson y Eyre-Walker (2019) que trata sobre la tasa de acumulación de mutaciones en bacterias (tasa de mutación) y su relación con el tamaño total del genoma de dichas bacterias. En este estudio se obtuvo las tasas de mutación y los tamaños de genoma de 34 especies de bactarias. Dicha información puede encontrarse en los archivos bac_rates.phy y bac_rates.csv que puedes encontrar en este proyecto de R. Vamos a cargar nuestros datos y a echarles un vistazo.
+
+```{r}
+## read bacterial data from file
+bacteria.data<-read.csv("bac_rates.csv", row.names=1)
+head(bacteria.data,3)
+
+bacteria.tree<-read.tree("bac_rates.phy")
+print(bacteria.tree,printlen=2)
+
+## graph phylogeny using plot Tree
+plotTree(bacteria.tree,ftype="i",fsize=0.5,lwd=1,mar=c(2.1,2.1,0.1,1.1))
+## add a horizontal axis to our plot
+axis(1,at=seq(0,1,length.out=5),cex.axis=0.8)
+
+```
+
+A continuación vamos a cargar el paquete de R geiger y usaremos la función fitContinuous para ajustar nuestros parámetros del modelo browniano.
+En este mismo paquete podemos encontrar la función name.check() que es de gran utilidad para comprobar que hay las mismas especies en la filogenia y en los datos de fenotipos y que hay una correspondencia perfecta entre los nombres en la filogenia y en el dataset.
+
+```{r}
+library(geiger)
+
+name.check(bacteria.tree, bacteria.data)
+
+#We create a vector for the function fitContinuous
+genome_size<-bacteria.data[,"Genome_Size_Mb"]
+genome_size
+#We asign names to phenotypes in the vector
+names(genome_size)<-rownames(bacteria.data)
+head(genome_size)
+
+## fit Brownian motion model using fitContinuous
+fitBM_gs<-fitContinuous(bacteria.tree,genome_size)
+fitBM_gs
+
+```
+
+Podemos ver como nuestras estimaciones de maxima verosimilitud o maximum likelihood (MLE) es de 25.0 para sigma2 y X0 de 1.98.
+Esto quiere decir que a partir de un genoma original de 1.98 Mb esperamos que por cada unidad de tiempo este valor cambie con una varianza de 25Mb2. Además de estas estimas tenemos el valor de AIC y AICc que nos permitirá comparar este modelos con otros modelos alternativos.
+En realidad los valores estimados para sigma2 y x0 no son interpretables en valores absolutos debido a que las ramas de nuestra filogenia están en terminos relativo (0 en la raiz y 1 en el presente).
+La función MLE usa una optimización numérica y nos da el dato de cuantas iteraciones independiente de optimización ha hecho en el análisis de MLE y cuantas veces ha convergido en la mejor solución encontrada. En este caso fueron el 100% de la veces.
+
+Ahora vamos a analizar el otro fenotipo, tasas de mutación. Cargamos los datos y los observamos.
+
+```{r}
+## pull our mutation accumulation rate as a named vector
+mutation<-setNames(bacteria.data[,"Accumulation_Rate"],rownames(bacteria.data))
+head(mutation)
+
+## set up for side-by-side plots
+par(mfrow=c(1,2),mar=c(6.1,4.1,2.1,1.1))
+## histogram of mutation accumulation rates on original scale
+hist(mutation,main="",las=2,xlab="",cex.axis=0.7,cex.lab=0.9,breaks=seq(min(mutation),max(mutation),length.out=12))
+mtext("(a)",adj=0,line=1)
+mtext("rate",side=1,line=4,cex=0.9)
+## histogram of mutation accumulation rates on log scale
+ln_mutation<-log(mutation)
+hist(ln_mutation,main="",las=2,xlab="",cex.axis=0.7,cex.lab=0.9,breaks=seq(min(ln_mutation),max(ln_mutation),length.out=12))
+mtext("(b)",adj=0,line=1)
+mtext("ln(rate)",side=1,line=4,cex=0.9)
+
+```
+
+Si nos fijamos los datos brutos muestras una distribución muy inclinada a la izquierda. Si los tansformamos con una función logaritmica, muestran una distribución mucho más parecida a la normal y esto ayudará al ajuste del modelo.
+
+```{r}
+## fit Brownian motion model to log(mutation accumulation)
+fitBM_ar<-fitContinuous(bacteria.tree,ln_mutation)
+fitBM_ar
+
+```
+
+Podemos ahora comparar estos resultados con los de tamaño del genoma aunque recurdan que estos, a diferencia de los primeros, están en escala logaritmica.
+
+
+SEÑAL FILOGENÉTICA
+
+La señal filogenética de un fenotipo se observa cuando las especies más cercanas filogenéticamente se parecen más en su fenotipo de los que esperaríamos al azar. Esto está muy relacionado con el modelo browniano, ya que un fenotipo con señal filogenética debe de ajustarse bastante bien a un modelo browniano por lo que hemos explicado anteriormente.
+
+Una de las maneras más populares de medir la señal filogenética es con el parámetro lambda (Pagel, 1999).
+Valores de lambda menores de 1 corresponden a menor señal filogenética de lo que cabría esperar bajo un modelo browniano. El valor 0 de lambda corresponde a una ausencia total de señal filogenética. Y el valor de lambda de 1 corresponde a un modelo browniano puro.
+Usemos los datos las bacterias cargados anteriormente y la función phylosig del paquete phytools para calcular el valor de lambda de los fenotipo descritos anteriormente.
+
+```{r}
+## compute phylogenetic signal, lambda, for genome size
+## and mutation accumulation rate
+phylosig(bacteria.tree,genome_size,method="lambda")
+phylosig(bacteria.tree,ln_mutation,method="lambda")
+```
+
+Podemos apreciar como ambos fenotipos tienen una alta señal filogenética aunque un poco mayor en el primero que en el segundo.
+
+También podemos comprobar si podemos rechazar o no la hipótesis nula de lambda = 0. Debido a que lambda se calcula con ML, podemos comprobar esta hipotesis con likelihood ratio test.
+
+```{r}
+## test for significant phylogenetic signal, lambda,
+## in each of our two traits
+lambda_gs<-phylosig(bacteria.tree,genome_size,method="lambda",test=TRUE)
+lambda_gs
+lambda_ar<-phylosig(bacteria.tree, ln_mutation,method="lambda",test=TRUE)
+lambda_ar
+## our plot area into 1 column and two rows
+par(mfrow=c(2,1),mar=c(5.1,4.1,2.1,2.1),cex=0.8)
+## plot the likelihood surfaces of lambda for each of our
+## two traits
+plot(lambda_gs,las=1,cex.axis=0.9,bty="n",xlim=c(0,1.1))
+mtext("(a)",line=1,adj=0)
+plot(lambda_ar,las=1,cex.axis=0.9,bty="n",xlim=c(0,1.1))
+mtext("(b)",line=1,adj=0)
+```
+
+En ambos casos odemos rechazar la hipotesis nula de lambda = 0.
+
+Veremos ahora si podemos o no rechaza la hipotesis nula de lambda = 1. Lo podemos hacer calculando el MLE de lambda = 1 y comparando mediante LRT con el mejor valor obtenido.
+Además en este caso para calcular el valor de P necesitamos hacerlos con la distribución de chi2 con un grado de libertad.
+
+```{r}
+LR_gs<--2*(lambda_gs$lik(1)-lambda_gs$logL)
+LR_gs
+Pval_lambda_gs<-pchisq(LR_gs,df=1,lower.tail=FALSE)
+Pval_lambda_gs
+
+LR_ar<--2*(lambda_ar$lik(1)-lambda_ar$logL)
+Pval_lambda_ar<-pchisq(LR_ar,df=1,lower.tail=FALSE)
+Pval_lambda_ar
+
+```
+
+pchisq (para lower.tail=FALSE) nos da la probabilidad de observar un valor igual o más extremo de nuestro índice de probabilidad que el que calculamos para cada rasgo, asumiendo que el índice de probabilidad es χ2 -distribuido bajo el valor nulo.
+Podemos rechazar la hipotesis nula en el segundo caso pero no en el primero.
+
+
+MODELO ORNSTEIN-UHLENBECK (OU)
+
+El modelo final que consideraremos en esta sesión es el modelo Ornstein-Uhlenbeck de Hansen (1997). Este modelo es una extensión relativamente simple del movimiento browniano, con un parámetro adicional de selección (α o alpha) que describe la tendencia a evolucionar hacia un valor óptimo (θ). Debido a que este modelo implica un cambio evolutivo hacia un valor particular, el modelo de Ornstein-Uhlenbeck se interpreta con mayor frecuencia como un modelo de evolución adaptativa en el que α corresponde a la fuerza de la selección natural y θ a la posición del óptimo. 
+```{r}
+## fit OU model to genome size
+fitOU_gs<-fitContinuous(bacteria.tree,genome_size,model="OU")
+fitOU_gs
+```
+
+Podemos ver como el modelo estimado es muy diferente al browniano ya el que el valor de alpha es bastante alto.
+Si te fijas, hemos recibido un mensaje de warning que nos indica que la estima del parametro alfa está cerca los limites considerados en la optimizacion. Vamos a cambiar dichos limites.
+
+```{r}
+fitOU_gs<-fitContinuous(bacteria.tree,genome_size,model="OU",bounds=list(alpha=c(0,10)))
+fitOU_gs
+```
+
+Como podemos apreciar ahora no hay mensaje de warning y además el valor de alpha es bastante superior. 
+
+A continuación vamos a comparar nuestros modelos BM and OU.
+```{r}
+## accumulate AIC scores from our three models into
+## a vector
+aic_gs<-setNames(c(AIC(fitBM_gs),AIC(fitOU_gs)),c("BM","OU"))
+aic_gs
+aic.w(aic_gs)
+```
+
+Podemos apreciar que le modelo OU tiene un ajuste mejor que el modelo BM.
+Podemos verlo ahora con el criterio AICc.
+
+Vamos hacer lo mismo para el otro fenotipo.
+
+```{r}
+## fit OU model
+fitOU_ar<-fitContinuous(bacteria.tree,ln_mutation,model="OU",bounds=list(alpha=c(0,100)))
+## accumulate AIC scores in a vector
+aic_ar<-setNames(c(AIC(fitBM_ar),AIC(fitOU_ar)),c("BM","OU"))
+## compute and print Akaike weights
+aic.w(aic_ar)
+
+#Best model
+fitOU_ar
+```
+
+Podemos ver que hay un óptimo en nuestro fenotipo al que hay una tendencia a evolucionar.
+
+
+ACTIVIDADES
+
+Usa los datos de estimas de porcentage de GC en bacterias ("GC_Content_Percent"). Ajusta los modelos BM and OU y comparalos. Calcula la señal filogenética de este fenotipo. 
+
+```{r}
+##Your code here
+
+
+```
+
+
