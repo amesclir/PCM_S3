@@ -117,14 +117,14 @@ En este modelo la variación se acumula en función del tiempo. Hemos podido ver
 Finalmente, cuando simulamos este modelo en una filogenia podemos apreciar que la especies más estrechamente emparentadas tiende a parecerse más en su fenotipo que las especies menos emparentadas.
 
 
-COMO AJUSTAR EL MODELO BRWONIANO A UN SET DE DATOS
+COMO AJUSTAR EL MODELO BROWNIANO A UN SET DE DATOS
 
 Necesitamos ajustar dos parámetros. Por una lado el parámetro de varianza instantanea del modelo browniano, que hemos llamada sigma2. Y en segundo lugar necesitamos también estimar el valor de nuestro fenotipo bajo estudio en la raíz de la filogenia.
 
 Para estimar estos dos parámetros a partir de nuestra filogenia y los valores del un fenotipo para las especies de esa filogenia, necesitamos un criterio para decidir cuales son los valores σ2 y x0 que mejor se ajustan a nuestros datos (filogenia y valores del fenotipo de las especies).
 Una estrategia es usar maxima verosimilitud o maximum likelihood, es decir, seleccionar los valores de nuestros parámetros que maximicen la probabilidad de obtener los datos que observamos (filogenia y fenotipo).
 
-Ajustar un modelo browniano es bastante fácil en R. Para hacerlo vamos a cargar en primer lugar los datos de un estudio de Gibson y Eyre-Walker (2019) que trata sobre la tasa de acumulación de mutaciones en bacterias (tasa de mutación) y su relación con el tamaño total del genoma de dichas bacterias. En este estudio se obtuvo las tasas de mutación y los tamaños de genoma de 34 especies de bacterias. Dicha información puede encontrarse en los archivos bac_rates.phy y bac_rates.csv que puedes encontrar en este proyecto de R. Vamos a cargar nuestros datos y a echarles un vistazo.
+Ajustar un modelo browniano es bastante fácil en R. Para hacerlo vamos a cargar en primer lugar los datos de un estudio de Gibson & Eyre-Walker (2019) que trata sobre la tasa de acumulación de mutaciones en bacterias (tasa de mutación) y su relación con el tamaño total del genoma de dichas bacterias. En este estudio se obtuvo las tasas de mutación y los tamaños de genoma de 34 especies de bacterias. Dicha información puede encontrarse en los archivos bac_rates.phy y bac_rates.csv que puedes encontrar en este proyecto de R. Vamos a cargar nuestros datos y a echarles un vistazo.
 
 ```{r}
 ## read bacterial data from file
@@ -308,7 +308,7 @@ Podemos ver que hay un óptimo en nuestro fenotipo al que hay una tendencia a ev
 ##############################
 ACTIVIDADES
 
-Usa los datos de estimas de porcentage de GC en bacterias ("GC_Content_Percent"). Ajusta los modelos BM, .ambda and OU  con la función fitContinuous y comparalos. Calcula la señal filogenética de este fenotipo con la función phylosig. 
+Usa los datos de estimas de porcentage de GC en bacterias ("GC_Content_Percent"). Ajusta los modelos BM, lambda and OU  con la función fitContinuous y comparalos. Calcula la señal filogenética de este fenotipo con la función phylosig. 
 
 ```{r}
 ##Your code here
