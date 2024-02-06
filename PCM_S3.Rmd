@@ -102,7 +102,7 @@ En el apartado anterior hemos hecho simulaciones del modelo browniano. Pero lo q
 library(phytools)
 ## simulate a tree and Brownian evolution on that
 ## tree using simBMphylo
-object<-simBMphylo(n=6,t=100,sig2=0.01,fsize=0.8,cex.axis=0.6,cex.lab=0.8,las=1)
+object<-simBMphylo(n=6,t=100,sig2=0.00001,fsize=0.8,cex.axis=0.6,cex.lab=0.8,las=1)
 
 ```
 
