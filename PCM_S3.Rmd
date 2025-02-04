@@ -12,8 +12,34 @@ EL MODELO BROWNIANO
 El modelo de movimiento browniano (Brownian motion model) es un modelo estocástico de movimiento aleatorio y de tiempo continuo en el que los cambios de un período de tiempo al siguiente son extracciones aleatorias de una distribución normal con una media de cero y una varianza σ2 (Felsenstein 1973).
 Dadas estas condiciones, la varianza esperada bajo el modelo browniano aumenta linealmente a lo largo del tiempo con una tasa instantánea que es equivalente a la varianza de la distribución normal a partir de la cual se dibujan los cambios evolutivos.
 
-El movimiento browniano es un modelo simple y muy fácil de emular usando una computadora.
-Para comenzar, simulemos una única instancia de evolución del movimiento browniano durante 100 generaciones de tiempo discreto en el que la varianza del proceso de difusión (σ2) es igual a 0,01 por iteración del proceso.
+¿Qué es el modelo de movimiento browniano explicado de manera didáctica?
+
+Imagina una partícula suspendida en un liquido, como un grano de polen. Observarás que se mueve de forma aleatoria, sin seguir un patrón definido. Este movimiento errático se conoce como movimiento browniano.
+
+El modelo de movimiento browniano es una herramienta matemática que nos permite simular este tipo de movimiento aleatorio. Es un modelo estocástico, lo que significa que incorpora elementos aleatorios en su descripción.
+
+¿Cómo funciona el modelo?
+
+El modelo browniano asume que los cambios en la posición de la partícula en cada instante de tiempo son independientes y aleatorios. Estos cambios se extraen de una distribución normal con una media de cero y una varianza σ2. La varianza σ2 representa la intensidad del movimiento aleatorio.
+
+A medida que pasa el tiempo, la varianza total del movimiento browniano aumenta linealmente. Esto significa que la partícula se aleja cada vez más de su posición inicial a medida que transcurre el tiempo.
+
+Simulación del movimiento browniano
+
+El movimiento browniano es muy fácil de simular en una computadora. Para ello, podemos seguir estos pasos:
+
+1. Inicialización: Comenzamos con una partícula en una posición inicial determinada.
+2. Iteración: En cada paso de tiempo, generamos un cambio aleatorio en la posición de la partícula, extrayéndolo de una distribución normal con media cero y varianza σ2.
+3. Actualización: Actualizamos la posición de la partícula sumando el cambio aleatorio generado en el paso anterior.
+4. Repetición: Repetimos los pasos 2 y 3 durante un número determinado de pasos de tiempo.
+
+Ejemplo de simulación
+
+Simulemos una única instancia de evolución del movimiento browniano durante 100 generaciones de tiempo discreto. Supongamos que la varianza del proceso de difusión (σ2) es igual a 0,01 por iteración del proceso.
+
+En cada paso de tiempo, generaremos un número aleatorio de una distribución normal con media cero y varianza 0,01. Este número representará el cambio en la posición de la partícula. Sumaremos este cambio a la posición actual de la partícula para obtener su nueva posición.
+
+Repitiendo este proceso durante 100 generaciones, obtendremos una trayectoria aleatoria que representa el movimiento browniano de la partícula.
 
 ```{r}
 # set values for time steps and sigma squared parameter
@@ -49,7 +75,7 @@ invisible(apply(X[2:nsim,],1,function(x,t) lines(t,x),t=t))
 ```
 
 Podemos apreciar como algunas simulaciones van hacia abajo y otras hacia arriba pero no podemos observar ninguna tendencia apreciable.
-En general el cambio acumulado aumenta con respecto al tiempo. Es decir, podemos ver mucho más variación a la deracha que la izquierda.
+En general el cambio acumulado aumenta con respecto al tiempo. Es decir, podemos ver mucho más variación a la derecha que la izquierda.
 
 La magnitud del parametro sigma2, la tasa instantanea de cambio en el proceso Browniano es clave en el proceso browniano.
 Veamos que pasa si tenemos una tasa 10 veces menor.
@@ -110,18 +136,28 @@ De nuevo podemos apreciar como la cantidad de cambio acumulado aumenta con el ti
 La diferencia aquí es que los linajes solo pueden comenzar a diferenciarse una vez han divergido. Y la cantidad de cambio acumulado entre la especies es directamente proporcional al tiempo que hace que divergieron e inversamente proporcional al tiempo que comparte coancestría desde la raiz.
 
 
-PROPIEDADES DEL MODELO BROWNIANO
+PROPIEDADES DEL MODELO BROWNIANO: UN MOVIMIENTO ALEATORIO EN EL TIEMPO
 
-El modelo browniano es un modelo de movimiento estocástico y sin una dirección definida. En cada lapso de tiempo podría tener un movimiento en una dirección y en el siguiente en la otra dirección, volviendo al sitio inicial. En promedio no hay una tendencia de movimiento hacia arriba o hacia abajo.
-En este modelo la variación se acumula en función del tiempo. Hemos podido ver en la simulaciones como esa variación se acumula con el tiempo. La tasa de variación es equivalente la tasa de cambio instantaneo en el modelo browniano que hemos denominado sigma2.
-Finalmente, cuando simulamos este modelo en una filogenia podemos apreciar que la especies más estrechamente emparentadas tiende a parecerse más en su fenotipo que las especies menos emparentadas.
+El modelo browniano describe un movimiento estocástico, lo que significa que la dirección en cada instante es completamente aleatoria. Imagina una partícula diminuta que se mueve sin cesar, cambiando de dirección a cada momento, ¡incluso regresando a su punto de partida! En promedio, la partícula no muestra ninguna tendencia de movimiento hacia arriba, hacia abajo o en ninguna dirección específica.
+
+La varianza: una medida de dispersión en el tiempo
+
+A pesar de su naturaleza aleatoria, el modelo browniano presenta una característica interesante: la varianza, que mide cuánto se dispersa la partícula de su posición inicial, aumenta linealmente con el tiempo. Es decir, cuanto más tiempo pasa, más probable es que la partícula se encuentre lejos de su punto de partida.
+
+Sigma2: la intensidad del movimiento browniano
+
+La tasa a la que aumenta la varianza está determinada por un parámetro crucial llamado sigma2 (σ2). Sigma2 representa la intensidad del movimiento browniano: cuanto mayor es sigma2, más rápido se dispersa la partícula con el tiempo.
+
+Aplicaciones en la filogenia: parentesco y fenotipo
+
+El modelo browniano no solo es útil para describir el movimiento de partículas. También se aplica en el estudio de la evolución de las especies. Al simular el modelo browniano en un árbol filogenético, podemos observar cómo las especies más emparentadas tienden a parecerse más en su fenotipo (características observables) que las especies menos emparentadas. Esto se debe a que las especies emparentadas han tenido menos tiempo para acumular cambios aleatorios en su fenotipo.
 
 
 COMO AJUSTAR EL MODELO BROWNIANO A UN SET DE DATOS
 
 Necesitamos ajustar dos parámetros. Por una lado el parámetro de varianza instantanea del modelo browniano, que hemos llamada sigma2. Y en segundo lugar necesitamos también estimar el valor de nuestro fenotipo bajo estudio en la raíz de la filogenia.
 
-Para estimar estos dos parámetros a partir de nuestra filogenia y los valores del un fenotipo para las especies de esa filogenia, necesitamos un criterio para decidir cuales son los valores σ2 y x0 que mejor se ajustan a nuestros datos (filogenia y valores del fenotipo de las especies).
+Para estimar estos dos parámetros a partir de nuestra filogenia y los valores de un fenotipo para las especies de esa filogenia, necesitamos un criterio para decidir cuales son los valores σ2 y x0 que mejor se ajustan a nuestros datos (filogenia y valores del fenotipo de las especies).
 Una estrategia es usar maxima verosimilitud o maximum likelihood, es decir, seleccionar los valores de nuestros parámetros que maximicen la probabilidad de obtener los datos que observamos (filogenia y fenotipo).
 
 Ajustar un modelo browniano es bastante fácil en R. Para hacerlo vamos a cargar en primer lugar los datos de un estudio de Gibson & Eyre-Walker (2019) que trata sobre la tasa de acumulación de mutaciones en bacterias (tasa de mutación) y su relación con el tamaño total del genoma de dichas bacterias. En este estudio se obtuvo las tasas de mutación y los tamaños de genoma de 34 especies de bacterias. Dicha información puede encontrarse en los archivos bac_rates.phy y bac_rates.csv que puedes encontrar en este proyecto de R. Vamos a cargar nuestros datos y a echarles un vistazo.
@@ -197,7 +233,7 @@ fitBM_ar
 
 ```
 
-Podemos ahora comparar estos resultados con los de tamaño del genoma aunque recurdan que estos, a diferencia de los primeros, están en escala logaritmica.
+Podemos ahora comparar estos resultados con los de tamaño del genoma aunque recueda que estos, a diferencia de los primeros, están en escala logaritmica.
 
 
 SEÑAL FILOGENÉTICA
@@ -256,9 +292,17 @@ Pval_lambda_ar
 Podemos rechazar la hipotesis nula en el segundo caso pero no en el primero.
 
 
-MODELO ORNSTEIN-UHLENBECK (OU)
+EL MODELO ORNSTEIN-UHLENBECK (OU): UN MOVIMIENTO CON UN OBJETIVO
 
-El modelo final que consideraremos en esta sesión es el modelo Ornstein-Uhlenbeck de Hansen (1997). Este modelo es una extensión relativamente simple del movimiento browniano, con un parámetro adicional de selección (α o alpha) que describe la tendencia a evolucionar hacia un valor óptimo (θ). Debido a que este modelo implica un cambio evolutivo hacia un valor particular, el modelo de Ornstein-Uhlenbeck se interpreta con mayor frecuencia como un modelo de evolución adaptativa en el que α (alpha) corresponde a la fuerza de la selección natural y θ a la posición del óptimo. 
+El modelo Ornstein-Uhlenbeck (OU) de Hansen (1997) es como un hermano un poco más complejo del modelo browniano. Imagina que la partícula ya no se mueve sin rumbo fijo, sino que tiene una ligera preferencia por regresar a un punto central, como si estuviera atada a un resorte invisible.
+
+¿Qué añade el modelo OU?
+
+Este modelo introduce un nuevo parámetro llamado alfa (α) que controla la fuerza con la que la partícula se ve atraída hacia ese punto central, al que llamamos theta (θ). Cuanto mayor es alfa, más fuerte es la atracción.
+
+Una interpretación evolutiva
+
+En el contexto de la evolución, el modelo OU se interpreta a menudo como un modelo de evolución adaptativa. En este caso, alfa representa la fuerza de la selección natural, mientras que theta representa el valor óptimo de una característica. Es decir, la selección natural empuja a las especies a evolucionar hacia ese valor óptimo.
 
 ```{r}
 ## fit OU model to genome size
@@ -317,7 +361,7 @@ Usa los datos de estimas de porcentage de GC en bacterias ("GC_Content_Percent")
 ```
 
 
-REFERENCIAS BÁSICAS
+REFERENCIAS TEÓRICAS BÁSICAS
 
 Felsenstein, J. (1973). Maximum-likelihood estimation of evolutionary trees from continuous characters. American journal of human genetics, 25(5), 471.
 
@@ -327,5 +371,10 @@ Pagel, M. (1999). Inferring the historical patterns of biological evolution. Nat
 
 
 
-REFERENCIAS COMPLEMENTARIAS
+REFERENCIAS TEÓRICAS COMPLEMENTARIAS
 Gibson, B., & Eyre-Walker, A. (2019). Investigating evolutionary rate variation in bacteria. Journal of molecular evolution, 87(9-10), 317-326.
+
+REFERENCIAS CASOS PRÁCTICOS
+Escudero, M., Hipp, A. L., Hansen, T. F., Voje, K. L., & Luceño, M. (2012). Selection and inertia in the evolution of holocentric chromosomes in sedges (Carex, Cyperaceae). New Phytologist, 195(1), 237-247.
+
+Escudero, M., Hipp, A. L., Waterway, M. J., & Valente, L. M. (2012). Diversification rates and chromosome evolution in the most diverse angiosperm genus of the temperate zone (Carex, Cyperaceae). Molecular Phylogenetics and Evolution, 63(3), 650-655.
