@@ -12,17 +12,20 @@ EL MODELO BROWNIANO
 El modelo de movimiento browniano (Brownian motion model) es un modelo estocástico de movimiento aleatorio y de tiempo continuo en el que los cambios de un período de tiempo al siguiente son extracciones aleatorias de una distribución normal con una media de cero y una varianza σ2 (Felsenstein 1973).
 Dadas estas condiciones, la varianza esperada bajo el modelo browniano aumenta linealmente a lo largo del tiempo con una tasa instantánea que es equivalente a la varianza de la distribución normal a partir de la cual se dibujan los cambios evolutivos.
 
+
 ¿Qué es el modelo de movimiento browniano explicado de manera didáctica?
 
 Imagina una partícula suspendida en un liquido, como un grano de polen. Observarás que se mueve de forma aleatoria, sin seguir un patrón definido. Este movimiento errático se conoce como movimiento browniano.
 
 El modelo de movimiento browniano es una herramienta matemática que nos permite simular este tipo de movimiento aleatorio. Es un modelo estocástico, lo que significa que incorpora elementos aleatorios en su descripción.
 
+
 ¿Cómo funciona el modelo?
 
 El modelo browniano asume que los cambios en la posición de la partícula en cada instante de tiempo son independientes y aleatorios. Estos cambios se extraen de una distribución normal con una media de cero y una varianza σ2. La varianza σ2 representa la intensidad del movimiento aleatorio.
 
 A medida que pasa el tiempo, la varianza total del movimiento browniano aumenta linealmente. Esto significa que la partícula se aleja cada vez más de su posición inicial a medida que transcurre el tiempo.
+
 
 Simulación del movimiento browniano
 
@@ -32,6 +35,7 @@ El movimiento browniano es muy fácil de simular en una computadora. Para ello, 
 2. Iteración: En cada paso de tiempo, generamos un cambio aleatorio en la posición de la partícula, extrayéndolo de una distribución normal con media cero y varianza σ2.
 3. Actualización: Actualizamos la posición de la partícula sumando el cambio aleatorio generado en el paso anterior.
 4. Repetición: Repetimos los pasos 2 y 3 durante un número determinado de pasos de tiempo.
+
 
 Ejemplo de simulación
 
@@ -140,13 +144,16 @@ PROPIEDADES DEL MODELO BROWNIANO: UN MOVIMIENTO ALEATORIO EN EL TIEMPO
 
 El modelo browniano describe un movimiento estocástico, lo que significa que la dirección en cada instante es completamente aleatoria. Imagina una partícula diminuta que se mueve sin cesar, cambiando de dirección a cada momento, ¡incluso regresando a su punto de partida! En promedio, la partícula no muestra ninguna tendencia de movimiento hacia arriba, hacia abajo o en ninguna dirección específica.
 
+
 La varianza: una medida de dispersión en el tiempo
 
 A pesar de su naturaleza aleatoria, el modelo browniano presenta una característica interesante: la varianza, que mide cuánto se dispersa la partícula de su posición inicial, aumenta linealmente con el tiempo. Es decir, cuanto más tiempo pasa, más probable es que la partícula se encuentre lejos de su punto de partida.
 
+
 Sigma2: la intensidad del movimiento browniano
 
 La tasa a la que aumenta la varianza está determinada por un parámetro crucial llamado sigma2 (σ2). Sigma2 representa la intensidad del movimiento browniano: cuanto mayor es sigma2, más rápido se dispersa la partícula con el tiempo.
+
 
 Aplicaciones en la filogenia: parentesco y fenotipo
 
@@ -233,7 +240,7 @@ fitBM_ar
 
 ```
 
-Podemos ahora comparar estos resultados con los de tamaño del genoma aunque recueda que estos, a diferencia de los primeros, están en escala logaritmica.
+Podemos ahora comparar estos resultados con los de tamaño del genoma aunque recuerda que estos, a diferencia de los primeros, están en escala logaritmica.
 
 
 SEÑAL FILOGENÉTICA
@@ -242,7 +249,7 @@ La señal filogenética de un fenotipo se observa cuando las especies más cerca
 
 Una de las maneras más populares de medir la señal filogenética es con el parámetro lambda (Pagel, 1999).
 Valores de lambda menores de 1 corresponden a menor señal filogenética de lo que cabría esperar bajo un modelo browniano. El valor 0 de lambda corresponde a una ausencia total de señal filogenética. Y el valor de lambda de 1 corresponde a un modelo browniano puro.
-Usemos los datos las bacterias cargados anteriormente y la función phylosig del paquete phytools para calcular el valor de lambda de los fenotipo descritos anteriormente.
+Usemos los datos de las bacterias cargados anteriormente y la función phylosig del paquete phytools para calcular el valor de lambda de los fenotipo descritos anteriormente.
 
 ```{r}
 ## compute phylogenetic signal, lambda, for genome size
@@ -274,7 +281,7 @@ mtext("(b)",line=1,adj=0)
 
 En ambos casos podemos rechazar la hipotesis nula de lambda = 0.
 
-Veremos ahora si podemos o no rechaza la hipotesis nula de lambda = 1. Lo podemos hacer calculando el MLE de lambda = 1 y comparando mediante LRT con el mejor valor obtenido.
+Veremos ahora si podemos o no rechazar la hipotesis nula de lambda = 1. Lo podemos hacer calculando el MLE de lambda = 1 y comparando mediante LRT con el mejor valor obtenido.
 Además en este caso para calcular el valor de P necesitamos hacerlos con la distribución de chi2 con un grado de libertad.
 
 ```{r}
@@ -298,7 +305,7 @@ El modelo Ornstein-Uhlenbeck (OU) de Hansen (1997) es como un hermano un poco m�
 
 ¿Qué añade el modelo OU?
 
-Este modelo introduce un nuevo parámetro llamado alfa (α) que controla la fuerza con la que la partícula se ve atraída hacia ese punto central, al que llamamos theta (θ). Cuanto mayor es alfa, más fuerte es la atracción.
+Este modelo introduce un nuevo parámetro llamado alfa (α) que controla la fuerza con la que la partícula se ve atraída hacia ese punto central, al que llamamos theta (θ). Cuanto mayor es alfa y más alejados estamos de ese punto central, más fuerte es la atracción.
 
 Una interpretación evolutiva
 
